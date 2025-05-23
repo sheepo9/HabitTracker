@@ -145,3 +145,44 @@ class HabitTracker:
                 return self.calculate_streak(completions, periodicity)
             else:
                 return 0  # Streak is broken
+
+    # This function calculates the longest run streak among all defined habits
+    def get_longest_streak_overall(self) -> int:
+        max_streak = 0  # Initialize the maximum streak variable to 0
+
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            # Fetch all habit IDs from the habits table
+            cursor.execute("SELECT id FROM habits")
+            habit_ids = [row[0] for row in cursor.fetchall()]  # Extract IDs from the result
+
+        # Iterate through each habit and compute its longest streak
+        for habit_id in habit_ids:
+            streak = self.get_longest_streak(habit_id)  # Get the longest streak for the current habit
+            if streak > max_streak:
+                max_streak = streak  # Update the max streak if this one is longer
+
+        return max_streak  # Return the highest streak found across all habits
+
+# This function finds and returns the habit with the longest run streak
+    def get_habit_with_longest_streak(self) -> tuple:
+        max_streak = 0  # Initialize the maximum streak variable
+        best_habit = None  # Placeholder for the habit with the longest streak
+
+        with sqlite3.connect(DB_NAME) as conn:
+            cursor = conn.cursor()
+            # Fetch all habit IDs from the database
+            cursor.execute("SELECT id FROM habits")
+            habit_ids = [row[0] for row in cursor.fetchall()]  # Create a list of habit IDs
+
+    # Loop through each habit to find the one with the longest streak
+        for habit_id in habit_ids:
+            streak = self.get_longest_streak(habit_id)  # Get the longest streak for this habit
+            if streak > max_streak:
+                max_streak = streak  # Update the maximum streak if this one is greater
+                best_habit = self.get_habit_by_id(habit_id)  # Store the habit with the current longest streak
+
+        return best_habit  # Return the habit (as a tuple) with the longest streak
+
+    def __get_connection(self):
+        return sqlite3.connect(DB_NAME)

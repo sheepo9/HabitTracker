@@ -28,7 +28,7 @@ def main():
 
         if choice == "Add Habit":
             name = questionary.text("Enter habit name:").ask()
-            periodicity = questionary.select("Enter periodicity:", choices=["daily", "weekly"]).ask()
+            periodicity = questionary.select("Enter periodicity:", choices=["daily", "weekly", "monthly"]).ask()
             tracker.add_habit(Habit(name, periodicity))
 
         elif choice == "Complete Habit":
@@ -56,12 +56,14 @@ def main():
                     "View Habits by Periodicity",
                     "View Longest Streak for Habit",
                     "View Current Streak for Habit",
+                    "View Longest Streak Overall",
+                    "View Habit With Longest Streak",
                     "View Broken Habits",
                     "Back"
                 ]).ask()
 
             if analysis_choice == "View Habits by Periodicity":
-                period = questionary.select("Select periodicity:", choices=["daily", "weekly"]).ask()
+                period = questionary.select("Select periodicity:", choices=["daily", "weekly","monthly"]).ask()
                 habits = tracker.get_habits_by_periodicity(period)
                 if not habits:
                     print(f"No {period} habits found.")
@@ -97,6 +99,16 @@ def main():
                     print("Broken Habits:")
                     for habit in broken:
                         print(habit)
+            elif analysis_choice == "View Longest Streak Overall":
+                longest_streak = tracker.get_longest_streak_overall()
+                print(f"Longest streak overall: {longest_streak}")
+
+            elif analysis_choice == "View Habit With Longest Streak":
+                habit = tracker.get_habit_with_longest_streak()
+                if habit:
+                    print(f"Habit with longest streak: ID {habit[0]}, Name: {habit[1]}, Streak: {habit[2]}")
+                else:
+                    print("No habits found.")
             elif analysis_choice == "Back":
                 continue
         elif choice == "Delete Habit":
